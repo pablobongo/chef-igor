@@ -1332,7 +1332,10 @@ function initRicerca() {
 ============================================================ */
 
 function initNavigazione() {
-  document.querySelector('.btn-back').addEventListener('click', tornaLista);
+  // Event delegation — funziona anche dopo il render dinamico del dettaglio
+  document.addEventListener('click', e => {
+    if (e.target.closest('.btn-back')) tornaLista();
+  });
   document.getElementById('btn-nuova').addEventListener('click', () => {
     alert('Apri la chat Chef Igor in Claude per proporre una nuova ricetta.');
   });
