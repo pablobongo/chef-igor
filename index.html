@@ -1361,6 +1361,20 @@ function preparaHtmlDettaglio() {
 }
 
 
+/* ============================================================
+   AVVIO APP
+============================================================ */
+
+function init() {
+  preparaHtmlDettaglio();
+  initFiltri();
+  initRicerca();
+  initNavigazione();
+  sincronizza();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
 /* --- Registrazione Service Worker --- */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
