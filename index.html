@@ -1027,8 +1027,7 @@ const API = {
       }));
     } catch (err) {
       clearTimeout(timer);
-      console.error('getRicette fallito:', err.message);
-      return null; // null = errore rete, distinto da [] = foglio vuoto
+      return null; // null segnala errore rete a sincronizza() // null = errore rete, distinto da [] = foglio vuoto
     }
   },
 
@@ -1042,7 +1041,7 @@ const API = {
         body: JSON.stringify({ action: 'salvaRicetta', ...dati })
       });
     } catch (err) {
-      console.error('salvaRicetta fallito:', err.message);
+      mostraErrore('Salvataggio non riuscito — riprova.');
     }
   },
 
@@ -1068,7 +1067,7 @@ const API = {
 const Cache = {
   salva(ricette) {
     try { localStorage.setItem(CACHE_KEY, JSON.stringify(ricette)); }
-    catch (e) { console.error('Cache salva:', e.message); }
+    catch (e) { /* cache write fallita — non critico */ }
   },
   carica() {
     try {
@@ -1383,8 +1382,7 @@ if (document.readyState === 'loading') {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('SW registrato:', reg.scope))
-      .catch(err => console.error('SW errore:', err));
+      .catch(err => { /* SW registrazione fallita — silenzioso in produzione */ });
   });
 }
 </script>
