@@ -1366,18 +1366,32 @@ function preparaHtmlDettaglio() {
 ============================================================ */
 
 function init() {
-  preparaHtmlDettaglio();
-  initFiltri();
-  initRicerca();
-  initNavigazione();
-  sincronizza();
+  console.log('[boot] init() chiamata, readyState=', document.readyState);
+  try {
+    preparaHtmlDettaglio();
+    console.log('[boot] preparaHtmlDettaglio ok');
+    initFiltri();
+    console.log('[boot] initFiltri ok');
+    initRicerca();
+    console.log('[boot] initRicerca ok');
+    initNavigazione();
+    console.log('[boot] initNavigazione ok');
+    sincronizza();
+    console.log('[boot] sincronizza avviata');
+  } catch (e) {
+    console.error('[boot] ERRORE in init():', e.message, e.stack);
+  }
 }
 
+console.log('[boot] script inline in esecuzione, readyState=', document.readyState);
 if (document.readyState === 'loading') {
+  console.log('[boot] registro listener DOMContentLoaded');
   document.addEventListener('DOMContentLoaded', init);
 } else {
+  console.log('[boot] readyState già pronto, chiamo init() subito');
   init();
 }
+console.log('[boot] fine script inline (sync)');
 
 /* --- Registrazione Service Worker --- */
 if ('serviceWorker' in navigator) {
