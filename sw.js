@@ -5,7 +5,7 @@
    Regola critica: NON intercettare mai script.google.com
 ============================================================ */
 
-const CACHE_NAME = 'chef-igor-v1.0.3';
+const CACHE_NAME = 'chef-igor-v1.0.4';
 
 // Asset da mettere in cache all'installazione
 const ASSET_DA_CACHARE = [
@@ -61,23 +61,24 @@ self.addEventListener('fetch', event => {
   // Solo richieste GET entrano in cache
   if (event.request.method !== 'GET') return;
 
-  // Cache-first: cerca in cache, se non c'è va in rete e aggiorna cache
+  // Cache-first: cerca SOLO nella cache della versione corrente (mai in cache vecchie
+  // non ancora ripulite — caches.match() senza scope cercherebbe in tutte quante,
+  // rischiando di servire un index.html rimasto in una cache precedente)
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.match(event.request).then(cached => {
+        if (cached) return cached;
 
-      return fetch(event.request).then(response => {
-        // Salva in cache solo risposte valide
-        if (response && response.status === 200 && response.type === 'basic') {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return response;
-      }).catch(() => {
-        // Rete non disponibile e non in cache — restituisce index.html come fallback
-        return caches.match('./index.html');
+        return fetch(event.request).then(response => {
+          // Salva in cache solo risposte valide
+          if (response && response.status === 200 && response.type === 'basic') {
+            cache.put(event.request, response.clone());
+          }
+          return response;
+        }).catch(() => {
+          // Rete non disponibile e non in cache — restituisce index.html come fallback
+          return cache.match('./index.html');
+        });
       });
     })
   );
