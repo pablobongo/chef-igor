@@ -201,6 +201,12 @@
       object-fit: cover;
     }
 
+    .dettaglio-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     .card-corpo {
       padding: 11px 14px;
       flex: 1;
@@ -1249,17 +1255,41 @@ function htmlPassaggi(passaggi) {
     </div>`).join('');
 }
 
+/**
+ * Renderizza l'area hero del dettaglio (foto/emoji + pulsante upload) e
+ * aggancia i listener per la scelta e l'anteprima della foto personale.
+ */
+function renderHeroFoto(det, ricetta) {
+  det.querySelector('.dettaglio-hero').innerHTML = `
+    ${ricetta.FotoIgorURL
+      ? `<img src="${ricetta.FotoIgorURL}" alt="${ricetta.Nome}">`
+      : `<span style="font-size:72px;">${ricetta.Emoji || '🍽️'}</span>`}
+    <button class="btn-foto-upload">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      Carica foto mia
+    </button>
+    <input type="file" accept="image/*" class="input-foto-upload" style="display:none;">`;
+
+  det.querySelector('.btn-foto-upload').addEventListener('click', () => {
+    det.querySelector('.input-foto-upload').click();
+  });
+  det.querySelector('.input-foto-upload').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (ricetta.FotoIgorURL) URL.revokeObjectURL(ricetta.FotoIgorURL);
+    ricetta.FotoIgorURL = URL.createObjectURL(file);
+    renderHeroFoto(det, ricetta);
+  });
+}
+
 function apriDettaglio(ricetta) {
   AppState.ricettaAttiva = ricetta;
   const det  = document.getElementById('schermata-dettaglio');
   const lista = document.getElementById('schermata-lista');
 
-  det.querySelector('.dettaglio-hero').innerHTML = `
-    <span style="font-size:72px;">${ricetta.Emoji || '🍽️'}</span>
-    <button class="btn-foto-upload">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-      Carica foto mia
-    </button>`;
+  det.querySelector('.btn-back').onclick = tornaLista;
+
+  renderHeroFoto(det, ricetta);
 
   det.querySelector('.dettaglio-titolo').textContent   = ricetta.Nome;
   det.querySelector('.voto-grande').textContent        = '★ ' + ricetta.VotoFinale + '/10';
@@ -1332,10 +1362,7 @@ function initRicerca() {
 ============================================================ */
 
 function initNavigazione() {
-  // Event delegation — funziona anche dopo il render dinamico del dettaglio
-  document.addEventListener('click', e => {
-    if (e.target.closest('.btn-back')) tornaLista();
-  });
+  // Il listener di '.btn-back' viene agganciato direttamente in apriDettaglio()
   document.getElementById('btn-nuova').addEventListener('click', () => {
     alert('Apri la chat Chef Igor in Claude per proporre una nuova ricetta.');
   });
