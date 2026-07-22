@@ -5,7 +5,7 @@
    Regola critica: NON intercettare mai script.google.com
 ============================================================ */
 
-const CACHE_NAME = 'chef-igor-v1.0.4';
+const CACHE_NAME = 'chef-igor-v1.0.5';
 
 // Asset da mettere in cache all'installazione
 const ASSET_DA_CACHARE = [
