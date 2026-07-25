@@ -997,8 +997,9 @@ const API = {
         ...r,
         TempoEffettivo:      parseInt(r.TempoEffettivo)      || 0,
         VotoFinale:          parseInt(r.VotoFinale)          || 0,
-        DifficoltaPercepita: parseInt(r.DifficoltaPercepita) || 0,
+        DifficoltaPercepita: parseInt(r.DifficoltaPercepita || r['DifficoltàPercepita']) || 0,
         PersoneEffettive:    parseInt(r.PersoneEffettive)    || 0,
+        Note:     r.Note || r.Nota || '',
         Emoji:    API._emojiDaProteina(r.Proteina, r.Categoria),
         Passaggi: API._passaggiDaStringa(r.PassaggiRiassunti),
       }));
