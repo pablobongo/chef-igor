@@ -1015,7 +1015,7 @@ const API = {
       await fetch(WEBAPP_URL, {
         method: 'POST',
         mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
         body: JSON.stringify({ action: 'salvaRicetta', ...dati })
       });
     } catch (err) {
